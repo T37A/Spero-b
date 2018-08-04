@@ -101,8 +101,7 @@ app.get('/getCommits', (req, res) => {
     };
 
     client.get(url, args, function(data, response) {
-        jsonData = { ...data };
-        res.send(jsonData)
+        res.send(data)
     });
 
 
