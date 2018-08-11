@@ -150,10 +150,10 @@ app.post('/upload', upload.single('file'), function(req, res) {
     }
 
     // res.send(jsonData);
-    let outPut={maindomain1:[],maindomain2:[]};
+    let outPut=[{themeName:'maindomain1',data:[]},{themeName:'maindomain2',data:[]}];
 
     themesMap.forEach(function(value, key){
-       outPut.maindomain1.push({
+       outPut[0].data.push({
             name:key,
             hitCount:value.hitCount,
             keyWords:[...value.keyWords],
@@ -161,7 +161,7 @@ app.post('/upload', upload.single('file'), function(req, res) {
         }) 
     })
     themesMap.forEach(function(value, key){
-       outPut.maindomain2.push({
+       outPut[1].data.push({
             name:key,
             hitCount:value.hitCount,
             keyWords:[...value.keyWords],
