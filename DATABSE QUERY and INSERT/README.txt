@@ -1,0 +1,1 @@
+js code for inserting and quering the database.
