@@ -4,8 +4,15 @@ var multer = require('multer')
 var fs = require('fs');
 var bayes = require('bayes')
 var Client = require('node-rest-client').Client;
-let jsonData = require('./data/student.json');
-const removePunctuation =require('remove-punctuation');
+
+let jsonData = require('./data/upload.json');
+
+
+const ResponseCreator = require('./src/response/resCreator.js');
+const ClassifierEngin = require('./src/classifierEngin/classifierEngin.js');
+
+const natural = require('natural');
+
 
 const HashMap = require('hashmap');
 
@@ -23,7 +30,7 @@ var upload = multer({ //multer settings
 })
 
 
-app.use(function (req, res, next) {
+app.use(function(req, res, next) {
 
     // Website you wish to allow to connect
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -43,9 +50,40 @@ app.use(function (req, res, next) {
 });
 
 
-app.post('/login',(req,res)=>{
+app.post('/login', (req, res) => {
     return null;
 })
+
+app.get('/c', (req, res) => {
+
+var Analyzer = require('natural').SentimentAnalyzer;
+var stemmer = require('natural').PorterStemmer;
+var analyzer = new Analyzer("English", null, "afinn");
+let a=analyzer.getSentiment("very very very sad".split(" "));
+
+res.send(a);
+
+})
+
+
+app.get('/b', (req, res) => {
+    var classifier = new natural.BayesClassifier();
+    classifier.addDocument('pagal hai kya', 'aaaa');
+    classifier.addDocument('hum to diwane haikya', 'aaaa');
+    classifier.addDocument('humq tow diwanew haikyaq', 'aaaa');
+    classifier.addDocument('i am long qqqq', 'buy');
+    classifier.addDocument('buy the q\'s', 'buy');
+    classifier.addDocument('short gold', 'sell');
+    classifier.addDocument('sell gold', 'sell');
+
+    classifier.train();
+
+
+    let o = classifier.getClassifications('i')
+    //let o = classifier.classify('i')
+    res.send(o);
+
+}) //end b
 
 
 /*
@@ -53,35 +91,35 @@ default method returning hello world
 */
 app.get('/h', (req, res) => {
 
-var classifier = bayes()
+    var classifier = bayes()
 
-// teach it positive phrases
+    // teach it positive phrases
 
-//classifier.learn('amazing, awesome movie!! Yeah!! Oh boy.', 'positive')
+    //classifier.learn('amazing, awesome movie!! Yeah!! Oh boy.', 'positive')
 
 
 
-//classifier.learn('Sweet, this is incredibly, amazing, perfect, great!!', 'positive')
+    //classifier.learn('Sweet, this is incredibly, amazing, perfect, great!!', 'positive')
 
-// teach it a negative phrase
+    // teach it a negative phrase
 
-classifier.learn('terrible, shitty thing. Damn. Sucks!!', 'positive')
-classifier.learn('amazing', 'negative')
+    classifier.learn('terrible, shitty thing. Damn. Sucks!!', 'positive')
+    classifier.learn('amazing', 'negative')
 
-// now ask it to categorize a document it has never seen before
+    // now ask it to categorize a document it has never seen before
 
-//let a=classifier.categorize('awesome, cool, amazing!! Yay. it is terrible, shitty thing.')
-let a=classifier.categorize('damn')
+    //let a=classifier.categorize('awesome, cool, amazing!! Yay. it is terrible, shitty thing.')
+    let a = classifier.categorize('damn')
 
-console.log(a+"hehehe");
-var stateJson = classifier.toJson()
+    console.log(a + "hehehe");
+    var stateJson = classifier.toJson()
 
-//console.log(stateJson);
-// => 'positive'
-    
+    //console.log(stateJson);
+    // => 'positive'
 
- res.send('hello world:'+stateJson);
- //res.send('hello world:'+a);
+
+    res.send('hello world:' + stateJson);
+    //res.send('hello world:'+a);
 
 }) //end get
 
@@ -91,57 +129,19 @@ var stateJson = classifier.toJson()
 Method upload xlsx file and return converted json object with file data
 
 */
+
+
+
 app.post('/upload', upload.single('file'), function(req, res) {
+
     const workbook = XLSX.readFile(req.file.path);
     const sheet_name_list = workbook.SheetNames;
     //TODO[KD] assert: xlsx is always be of correct type
     let jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]]);
-    var counter=0;
-    let comment;
-    let arr;
-    let catArr;
-    let subThemeArr=[];
-    let subThemeCount= new HashMap();
-    subThemeCount.set('outcomeHeader',0);
-    subThemeCount.set('Intellectual',0);
-    subThemeCount.set('Further Learning',0);
-    subThemeCount.set('Personal',0);
-    subThemeCount.set('Interpersonal',0);
-    subThemeCount.set('Knowledge & Skills',0);
-    subThemeCount.set('career',0);
 
+    //res.send(jsonData);
 
-
-    themesMap=getThemeMap();
-
-    let themeObj;
-
-    for (var i = 0; i < jsonData.length; i++) {
-         comment=removePunctuation(jsonData[i].Comments);
-         arr=comment.split(" ");
-        for (var j = 0; j < arr.length; j++) {
-              catArr=map.get(arr[j]);
-            if(catArr){
-                for (var m = 0; m < catArr.length; m++) {
-                    themeObj=themesMap.get(catArr[m]);
-                    if(themeObj){
-                        themeObj.hitCount++;
-                        themeObj.comments.add(jsonData[i].Comments)
-                        themeObj.keyWords.add(arr[j])
-                    }else{
-                        console.log("no teme in array")
-                    }
-                }
-                //subThemeArr.push([...catArr]);
-            }
-           counter++;
-        }
-
-    } //end for
-
-    //console.log(themesMap);
-
-    //console.log('counter:'+subThemeArr);
+    let themesMap = ClassifierEngin.execute(jsonData, map);
 
     try {
         fs.unlinkSync(req.file.path);
@@ -149,44 +149,12 @@ app.post('/upload', upload.single('file'), function(req, res) {
         //error deleting the file
     }
 
-    // res.send(jsonData);
-    let outPut=[{themeName:'maindomain1',data:[]},{themeName:'maindomain2',data:[]}];
 
-    themesMap.forEach(function(value, key){
-       outPut[0].data.push({
-            name:key,
-            hitCount:value.hitCount,
-            keyWords:[...value.keyWords],
-            comments:[...value.comments]
-        }) 
-    })
-    themesMap.forEach(function(value, key){
-       outPut[1].data.push({
-            name:key,
-            hitCount:value.hitCount,
-            keyWords:[...value.keyWords],
-            comments:[...value.comments]
-        }) 
-    })
+    let outPut = ResponseCreator.generateResponse(themesMap);
+
     res.send(JSON.stringify(outPut));
 
 }) //end upload
-
-function getThemeMap(){
-    let themeMap= new HashMap();
-
-    themeMap.set('outcomeHeader',{hitCount:0,keyWords:new Set(),comments:new Set()});
-    themeMap.set('Intellectual',{hitCount:0,keyWords:new Set(),comments:new Set()});
-    themeMap.set('Further Learning',{hitCount:0,keyWords:new Set(),comments:new Set()});
-    themeMap.set('Personal',{hitCount:0,keyWords:new Set(),comments:new Set()});
-    themeMap.set('Interpersonal',{hitCount:0,keyWords:new Set(),comments:new Set()});
-    themeMap.set('Knowledge & Skills',{hitCount:0,keyWords:new Set(),comments:new Set()});
-    themeMap.set('career',{hitCount:0,keyWords:new Set(),comments:new Set()});
-    
-    return themeMap;
-}
-
-
 
 app.get('/form', (req, res) => {
     console.log("inside form");
@@ -230,24 +198,24 @@ app.get('/getCommits', (req, res) => {
 }) //end getCommits
 
 
-app.get('/go',(req,res)=>{
+app.get('/go', (req, res) => {
+    debugger
+    console.log(map.size);
+    res.send('' + map.size);
 
-   console.log(map.size);
-   res.send(''+map.size);
-    
 })
 
 app.listen(4000, () => {
-    
+
     for (var i = 0; i < jsonData.length; i++) {
-            let temp=map.get(jsonData[i].value);
-            if(!temp){
-            map.set(jsonData[i].value, [jsonData[i].key]);         
-            }else{
-                temp.push(jsonData[i].key);
-            }
-            }
-     console.log('Example app listening on port 4000!')
+        let temp = map.get(jsonData[i].value);
+        if (!temp) {
+            map.set(jsonData[i].value, [jsonData[i].key]);
+        } else {
+            temp.push(jsonData[i].key);
+        }
+    }
+    console.log('Example app listening on port 4000!')
 
 
 
