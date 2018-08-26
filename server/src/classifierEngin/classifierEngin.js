@@ -1,5 +1,6 @@
 const removePunctuation = require('remove-punctuation');
 const SubTheme = require('../../src/mainTheme/subTheme/subTheme.js');
+const SentimentEngin=require('./sentimentEngin/sentimentEngin.js');
 
 module.exports = {
     execute: (jsonData,map) => {
@@ -9,11 +10,12 @@ module.exports = {
         let catArr;
 
         themesMap = SubTheme.getThemeMap();
-        
+
         let themeObj;
         //debugger
         for (var i = 0; i < jsonData.length; i++) {
             comment = removePunctuation(jsonData[i].Comments);
+             SentimentEngin.bgetSetiment(jsonData[i].Comments);
             arr = comment.split(" ");
             for (var j = 0; j < arr.length; j++) {
                 catArr = map.get(arr[j]);

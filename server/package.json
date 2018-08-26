@@ -18,6 +18,7 @@
     "natural": "^0.6.1",
     "node-rest-client": "^3.1.0",
     "remove-punctuation": "0.0.4",
+    "sentiment": "^5.0.1",
     "xlsx": "^0.13.3"
   }
 }
