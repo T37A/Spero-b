@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <meta charset="utf-8">
+	  
+	  <!-- Bootstrap Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<!-- Bootstrap Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+      <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+      <title>Sample Page</title>
+      <script>
+         var settings = {
+           "async": true,
+           "crossDomain": true,
+           "url": "http://localhost:3000/getCommits?repoName=Spero-b&autherName=T37A",
+           "method": "GET"
+         }
+         $.ajax(settings).done(function (response) {
+         	
+           //debugger
+
+           const commitArray=response.map((commitObj)=>{
+           		
+           	return ({
+
+           		authorName:commitObj.commit.author.name,
+           		authorEmail:commitObj.commit.author.email,
+           		date:commitObj.commit.author.date,
+           		CommitMsg:commitObj.commit.message
+           	})
+           })
+			
+			console.log(commitArray.length);	
+			//debugger
+			
+		   /* converting object into JASON */
+		   //var obj = JSON.parse(response);
+		   
+		   /* START loop through data in jason object */
+		  
+		   /* END loop */
+
+         });
+      </script>
+   </head>
+   <body>
+      <h1 class="" id="autherName">: </h1>
+      <div id="autherEmail">Email: </div>
+      <div id="autherDate">Date: </div>
+      <div id="autherMsg">Message: </div>
+	  
+	  <table id="myTable">
+	  <tr>
+		<th>NAME</th>
+		<th>Email</th>
+		<th>Date</th>
+		<th>Message</th>
+	  </tr>
+</table>
+   </body>
+</html>

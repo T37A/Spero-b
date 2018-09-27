@@ -10,10 +10,15 @@
   "author": "Kirandeep",
   "license": "MIT",
   "dependencies": {
+    "bayes": "0.0.7",
     "body-parser": "1.15.1",
     "express": "4.13.4",
+    "hashmap": "^2.3.0",
     "multer": "1.1.0",
+    "natural": "^0.6.1",
     "node-rest-client": "^3.1.0",
+    "remove-punctuation": "0.0.4",
+    "sentiment": "^5.0.1",
     "xlsx": "^0.13.3"
   }
 }
