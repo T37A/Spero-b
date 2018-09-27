@@ -77,7 +77,7 @@ class Chart extends Component {
 
 
 		return (<div className="chartdiv">
-				<div className="chartHeader">{this.props.data.datasets[0].label}</div>
+				<div className="chartHeader">{this.props.data.datasets?this.props.data.datasets[0].label:""}</div>
 				<div className="chartBody"> {chart}</div>
 			
 		</div>
