@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import Commits from './components/Commits/Commits'
 import Chart from './components/Chart/Chart'
-import Form from './components/form/Form';
-
-
+import Form from './components/form/Form'
+import BackDrop from './components/backDrop/backDrop';
+import Modal from './components/modal/modal';
+import Comments from './components/comments/comments';
 
 class App extends Component {
 
@@ -12,7 +13,10 @@ class App extends Component {
         commits: [],
         chartData: {},
         showDemo: false,
-        showSpero: true
+        showSpero: true,
+        showModal:false,
+        activeSubTheme:null,
+        serverResponse:null
     }
 
     getChartDataTemplate = () => {
@@ -21,7 +25,7 @@ class App extends Component {
             datasets: [{
                 label: "GIT Commits",
                 data: [],
-                backgroundColor: ["#F7464A", "#46BFBD", "#fd7e14", "#007bff", "#28a745"],
+                backgroundColor: ["#F7464A", "#46BFBD", "#fd7e14", "#007bff", "#28a745","#ffc107","#dc3545"],
 
                 options: {
 
@@ -47,7 +51,7 @@ class App extends Component {
     }
 
     getSubThemeCharData = (obj) => {
-
+        
         const data = this.getChartDataTemplate();
         data.datasets[0].label = obj.themeName;
         for (var i = 0; i < obj.subThemes.length; i++) {
@@ -74,7 +78,7 @@ class App extends Component {
 
         const data = this.getChartDataTemplate();
         for (let [key, value] of members.entries()) {
-            console.log(key + ":" + value);
+            
             data.labels.push(key);
             data.datasets[0].data.push(value)
         }
@@ -116,6 +120,7 @@ class App extends Component {
 
     }
 
+
     formHandler = (event) => {
 
         event.preventDefault();
@@ -127,13 +132,12 @@ class App extends Component {
             enctype: "multipart/form-data"
         }).then(res => res.json())
             .then(res => {
-
+                this.setState({serverResponse: res})
                 let chartDataArray = [];
                 res.forEach((element) => {
-                    chartDataArray.push(this.getSubThemeCharData(element))
+                      chartDataArray.push(this.getSubThemeCharData(element))
                 })
 
-                //let data = this.getSubThemeCharData(res[0]);
                 this.setState({
                     speroChartData: chartDataArray
 
@@ -142,6 +146,35 @@ class App extends Component {
             });
     }
 
+    chartClickHandler=(elems)=>{
+        
+        if(elems.length>0){
+            const sliceName=elems[0]._chart.config.data.labels[elems[0]._index];
+        const response=this.state.serverResponse;
+        let  activeSubtheme=null;
+           response.some((element) => {
+               
+              activeSubtheme =  element.subThemes.find((subTheme)=>{
+                    if(subTheme.name===sliceName){
+                        return subTheme;
+                   }
+               })//end of find
+              
+              if(activeSubtheme) return true;
+
+
+           })//end of for
+
+          
+        this.setState({showModal:true,activeSubTheme:activeSubtheme});
+        }
+        
+        
+    }
+
+    closeClickHandler=()=>{
+        this.setState({showModal:false});
+    }
 
     render() {
 
@@ -156,6 +189,7 @@ class App extends Component {
             content = (
                 <div className="container-fluid">
 
+               
                     <div className="row">
                         <div className="col-sm-12" >
                             <h2 className='display-4' style={style}>Spero-B Team Teja</h2>
@@ -163,9 +197,9 @@ class App extends Component {
                     </div>
 
                     <div className="row">
-                        <div className="col-sm-6" ><Chart type="Pie" data={this.state.chartData} />
+                        <div className="col-sm-6" ><Chart clickHandler={this.chartClickHandler} type="Pie" data={this.state.chartData} />
                         </div>
-                        <div className="col-sm-6" ><Chart type="Bar" data={this.state.chartData} />
+                        <div className="col-sm-6" ><Chart clickHandler={this.chartClickHandler} type="Bar" data={this.state.chartData} />
                         </div>
                     </div>
                     <div className="row">
@@ -180,20 +214,24 @@ class App extends Component {
             if (this.state.speroChartData) {
                 content = (<div className="container-fluid">
 
-                    <div className="row" style={{ marginTop: '20px' }}>
-                        <div className="col-sm-4" ><Chart type="Pie" data={this.state.speroChartData[0]} />
-                        </div>
-                        <div className="col-sm-4" ><Chart type="Doughnut" data={this.state.speroChartData[1]} />
-                        </div>
-                        <div className="col-sm-4" ><Chart type="Pie" data={this.state.speroChartData[2]} />
-                        </div>
-
-                    </div>
+                <BackDrop show={this.state.showModal}>
+                </BackDrop>
+                <Modal show={this.state.showModal} closeClickHandler={this.closeClickHandler}>
+                    <Comments subTheme={this.state.activeSubTheme}/>
+                </Modal>
 
                     <div className="row" style={{ marginTop: '20px' }}>
-                        <div className="col-sm-4" ><Chart type="Pie" data={this.state.speroChartData[3]} />
+                        <div className="col-sm-4" ><Chart clickHandler={this.chartClickHandler} type="Pie" data={this.state.speroChartData[0]} />
                         </div>
-                        <div className="col-sm-4" ><Chart type="Doughnut" data={this.state.speroChartData[4]} />
+                        <div className="col-sm-4" ><Chart clickHandler={this.chartClickHandler} type="Doughnut" data={this.state.speroChartData[1]} />
+                        </div>
+                        <div className="col-sm-4" ><Chart clickHandler={this.chartClickHandler} type="Pie" data={this.state.speroChartData[2]} />
+                        </div>
+
+                    
+                        <div className="col-sm-6" ><Chart clickHandler={this.chartClickHandler} type="Pie" data={this.state.speroChartData[3]} />
+                        </div>
+                        <div className="col-sm-6" ><Chart clickHandler={this.chartClickHandler} type="Doughnut" data={this.state.speroChartData[4]} />
                         </div>
 
 

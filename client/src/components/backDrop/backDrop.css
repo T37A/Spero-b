@@ -1,0 +1,12 @@
+.backDrop{
+	left:0;
+	right: 0;
+	position: fixed;
+	z-index: 400;
+	background-color: #00457c;
+	opacity: .5;
+	width: 100%;
+	height: 100%;
+
+
+}

@@ -1,0 +1,30 @@
+.modal1{
+	background-color: white;
+	z-index: 500;
+	position: fixed;
+	left:5%;
+	top:5%;
+	width:80%;
+	height:90%;
+	overflow:scroll;
+	}
+
+.modalHeader{
+	left:82%;
+	top:5%;
+	position: inherit;
+	z-index: 501;
+	font-size: 1.3rem;
+	font-size: bold;
+}
+
+.closeButton{
+	background-color: #6c757d;
+	color: white;
+
+}
+.closeButton:hover{
+	background-color: black;
+	cursor: pointer;
+	color: white;	
+}

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import  './chart.css'
 import { Pie, Bar, Doughnut } from 'react-chartjs-2'
 
 class Chart extends Component {
@@ -17,7 +18,7 @@ class Chart extends Component {
 				data: [
 					90, 90, 90, 90
 				],
-				backgroundColor: ["#F7464A", "#46BFBD", "#FDB45C", "#CCC", "#FFUD3"]
+				backgroundColor: ["#F7464A", "#46BFBD", "#FDB45C", "#CCC", "#FFUD3","#ffc107","#dc3545"]
 			}]
 		}
 
@@ -45,7 +46,7 @@ class Chart extends Component {
 
 				getElementsAtEvent={(elems) => {
 					//debugger
-					console.log(elems[0]._chart.config.data.labels[elems[0]._index])
+					this.props.clickHandler(elems)
 				}} 
 
 				getDatasetAtEvent={(elems) => {
@@ -67,16 +68,18 @@ class Chart extends Component {
 				data={this.props.data}
 
 				getElementsAtEvent={(elems) => {
-					//debugger
-					console.log(elems[0]._chart.config.data.labels[elems[0]._index])
+					
+					this.props.clickHandler(elems)
 				}}
 
 			/>)
 		}
 
 
-		return (<div className="shadow-lg p-3 mb-5 bg-white rounded" >
-			{chart}
+		return (<div className="chartdiv">
+				<div className="chartHeader">{this.props.data.datasets[0].label}</div>
+				<div className="chartBody"> {chart}</div>
+			
 		</div>
 		)
 	}
