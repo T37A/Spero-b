@@ -49,10 +49,10 @@ app.use(function(req, res, next) {
     next();
 });
 
-
+/*TODO[KD] D
 app.post('/login', (req, res) => {
     return null;
-})
+})*/
 
 app.get('/c', (req, res) => {
 
@@ -139,8 +139,6 @@ app.post('/upload', upload.single('file'), function(req, res) {
     //TODO[KD] assert: xlsx is always be of correct type
     let jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]]);
 
-    //res.send(jsonData);
-
     let themesMap = ClassifierEngin.execute(jsonData, map);
 
     try {
@@ -148,7 +146,6 @@ app.post('/upload', upload.single('file'), function(req, res) {
     } catch (e) {
         //error deleting the file
     }
-
 
     let outPut = ResponseCreator.generateResponse(themesMap);
 
@@ -167,11 +164,8 @@ app.get('/f', (req, res) => {
 })
 
 
-
-
 /*
 API get list of commits from GIThub Repository.
-
 */
 app.get('/getCommits', (req, res) => {
 

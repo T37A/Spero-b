@@ -1,4 +1,4 @@
-const removePunctuation = require('remove-punctuation');
+const RemovePunctuation = require('remove-punctuation');
 const SubTheme = require('../../src/mainTheme/subTheme/subTheme.js');
 const SentimentEngin=require('./sentimentEngin/sentimentEngin.js');
 
@@ -14,8 +14,8 @@ module.exports = {
         let themeObj;
         //debugger
         for (var i = 0; i < jsonData.length; i++) {
-            comment = removePunctuation(jsonData[i].Comments);
-             SentimentEngin.bgetSetiment(jsonData[i].Comments);
+            comment = RemovePunctuation(jsonData[i].Comments);
+            let sentiment =SentimentEngin.getSetiment(jsonData[i].Comments);
             arr = comment.split(" ");
             for (var j = 0; j < arr.length; j++) {
                 catArr = map.get(arr[j]);
@@ -24,7 +24,7 @@ module.exports = {
                         themeObj = themesMap.get(catArr[m]);
                         if (themeObj) {
                             themeObj.hitCount++;
-                            themeObj.comments.add(jsonData[i].Comments)
+                            themeObj.comments.add({"comment":jsonData[i].Comments, "sentiment":sentiment})
                             themeObj.keyWords.add(arr[j])
                             //posivite and negative here only
                         } else {

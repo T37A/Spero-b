@@ -47,7 +47,7 @@ class App extends Component {
     }
 
     getSubThemeCharData = (obj) => {
-      
+
         const data = this.getChartDataTemplate();
         data.datasets[0].label = obj.themeName;
         for (var i = 0; i < obj.subThemes.length; i++) {
@@ -122,16 +122,16 @@ class App extends Component {
         const data = new FormData(event.target);
         console.log('form submit caled');
         fetch('http://localhost:4000/upload', {
-                method: 'POST',
-                body: data,
-                enctype: "multipart/form-data"
-            }).then(res => res.json())
+            method: 'POST',
+            body: data,
+            enctype: "multipart/form-data"
+        }).then(res => res.json())
             .then(res => {
-              
-              let chartDataArray=[];
-              res.forEach((element)=>{
-                  chartDataArray.push(this.getSubThemeCharData(element)) 
-              })
+
+                let chartDataArray = [];
+                res.forEach((element) => {
+                    chartDataArray.push(this.getSubThemeCharData(element))
+                })
 
                 //let data = this.getSubThemeCharData(res[0]);
                 this.setState({
@@ -146,85 +146,85 @@ class App extends Component {
     render() {
 
 
-    const style = {
-      'background-color': 'wheat',
-      'text-align': 'center'
-    }
-    let content = null;
+        const style = {
+            'background-color': 'wheat',
+            'text-align': 'center'
+        }
+        let content = null;
 
-    if (this.state.showDemo) {
-      content = (
-        <div className="container-fluid">
+        if (this.state.showDemo) {
+            content = (
+                <div className="container-fluid">
 
-          <div className="row">
-            <div className="col-sm-12" >
-              <h2 className='display-4' style={style}>Spero-B Team Teja</h2>
-            </div>
-          </div>
+                    <div className="row">
+                        <div className="col-sm-12" >
+                            <h2 className='display-4' style={style}>Spero-B Team Teja</h2>
+                        </div>
+                    </div>
 
-          <div className="row">
-            <div className="col-sm-6" ><Chart type="Pie" data={this.state.chartData} />
-            </div>
-            <div className="col-sm-6" ><Chart type="Bar" data={this.state.chartData} />
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-sm-12" ><Commits commits={this.state.commits} />
-            </div>
-          </div>
-        </div>
-      )
-    }
+                    <div className="row">
+                        <div className="col-sm-6" ><Chart type="Pie" data={this.state.chartData} />
+                        </div>
+                        <div className="col-sm-6" ><Chart type="Bar" data={this.state.chartData} />
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-sm-12" ><Commits commits={this.state.commits} />
+                        </div>
+                    </div>
+                </div>
+            )
+        }
 
-    if (this.state.showSpero) {
-      if (this.state.speroChartData) {
-        content = (<div className="container-fluid">
+        if (this.state.showSpero) {
+            if (this.state.speroChartData) {
+                content = (<div className="container-fluid">
 
-          <div className="row" style={{marginTop: '20px'}}>
-            <div className="col-sm-4" ><Chart type="Pie" data={this.state.speroChartData[0]} />
-            </div>
-            <div className="col-sm-4" ><Chart type="Doughnut" data={this.state.speroChartData[1]} />
-            </div>
-            <div className="col-sm-4" ><Chart type="Pie" data={this.state.speroChartData[2]} />
-            </div>
+                    <div className="row" style={{ marginTop: '20px' }}>
+                        <div className="col-sm-4" ><Chart type="Pie" data={this.state.speroChartData[0]} />
+                        </div>
+                        <div className="col-sm-4" ><Chart type="Doughnut" data={this.state.speroChartData[1]} />
+                        </div>
+                        <div className="col-sm-4" ><Chart type="Pie" data={this.state.speroChartData[2]} />
+                        </div>
 
-          </div>
+                    </div>
 
-          <div className="row" style={{marginTop: '20px'}}>
-            <div className="col-sm-4" ><Chart type="Pie" data={this.state.speroChartData[3]} />
-            </div>
-            <div className="col-sm-4" ><Chart type="Doughnut" data={this.state.speroChartData[4]} />
-            </div>
-            
-
-          </div>
+                    <div className="row" style={{ marginTop: '20px' }}>
+                        <div className="col-sm-4" ><Chart type="Pie" data={this.state.speroChartData[3]} />
+                        </div>
+                        <div className="col-sm-4" ><Chart type="Doughnut" data={this.state.speroChartData[4]} />
+                        </div>
 
 
-        </div>)
-      } else {
-
-        content = (
-          <div className="container-fluid">
-
-            <div className="row">
-              <div className="col-sm-12" >
-                <Form formHandler={this.formHandler} />
-              </div>
-            </div>
+                    </div>
 
 
-          </div>
+                </div>)
+            } else {
+
+                content = (
+                    <div className="container-fluid">
+
+                        <div className="row">
+                            <div className="col-sm-12" >
+                                <Form formHandler={this.formHandler} />
+                            </div>
+                        </div>
+
+
+                    </div>
+                )
+            }
+
+
+        }
+
+        return (
+
+            <div>{content}</div>
+
         )
-      }
-
-
-    }
-
-    return (
-
-      <div>{content}</div>
-
-    )
     }
 
 }
