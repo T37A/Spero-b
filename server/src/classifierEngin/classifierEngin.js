@@ -13,10 +13,13 @@ module.exports = {
 
         let themeObj;
         //debugger
+        
         for (var i = 0; i < jsonData.length; i++) {
             comment = RemovePunctuation(jsonData[i].Comments);
             let sentiment =SentimentEngin.getSetiment(jsonData[i].Comments);
             arr = comment.split(" ");
+            //debugger
+            
             for (var j = 0; j < arr.length; j++) {
                 catArr = map.get(arr[j]);
                 if (catArr) {
@@ -24,7 +27,12 @@ module.exports = {
                         themeObj = themesMap.get(catArr[m]);
                         if (themeObj) {
                             themeObj.hitCount++;
-                            themeObj.comments.add({"comment":jsonData[i].Comments, "sentiment":sentiment})
+                            if(!themeObj.tempcommentSet.has(jsonData[i].Comments)){
+                                themeObj.tempcommentSet.add(jsonData[i].Comments)
+                                themeObj.comments.add({"comment":jsonData[i].Comments, "sentiment":sentiment})
+                            }
+                            
+                            
                             themeObj.keyWords.add(arr[j])
                             //posivite and negative here only
                         } else {
